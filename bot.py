@@ -3,22 +3,21 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Callb
 import requests
 
 # Valyuta API manzili va token
-EXCHANGE_API_URL = "https://api.exchangerate-api.com/v4/latest/USD"  # Valyuta API manzili
-BOT_TOKEN = "7406322804:AAGULtBXonXIQx7jaOuMXY6YnmpJx_pyUhw"  # Bot tokeningizni kiriting
+EXCHANGE_API_URL = "https://api.exchangerate-api.com/v4/latest/USD"
+BOT_TOKEN = "7406322804:AAGULtBXonXIQx7jaOuMXY6YnmpJx_pyUhw"
 
 # /start komandasi
-def start(update: Update, context: CallbackContext) -> None:
+def start(update: Update, context: CallbackContext):
     button = KeyboardButton("Integratsiyaga rozilik berish.", request_contact=True)
     keyboard = [[button]]
     reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-
     update.message.reply_text(
         "Botdan foydalanish uchun integratsiyaga rozilik bering.",
         reply_markup=reply_markup
     )
 
 # Telefon raqamini qayta ishlash
-def contact_handler(update: Update, context: CallbackContext) -> None:
+def contact_handler(update: Update, context: CallbackContext):
     if update.message.contact:
         button = "💵 Valyuta kursini ko‘rish"
         keyboard = [[button]]
@@ -28,16 +27,14 @@ def contact_handler(update: Update, context: CallbackContext) -> None:
         update.message.reply_text("Nimadir xato! Qayta urinib ko‘ring.")
 
 # Valyuta kurslarini ko‘rish
-def show_exchange_rates(update: Update, context: CallbackContext) -> None:
+def show_exchange_rates(update: Update, context: CallbackContext):
     update.message.reply_text("Valyuta kurslari yuklanmoqda...")
     try:
-        # Valyuta API'ga so‘rov yuborish
         response = requests.get(EXCHANGE_API_URL)
-        response.raise_for_status()  # Xatolik bo'lsa, exception tashlaydi
+        response.raise_for_status()
         data = response.json()
         rates = data["rates"]
 
-        # Kurslarni chiqarish
         message = "🌍 Valyuta kurslari (USD asosida):\n\n"
         for currency, rate in rates.items():
             message += f"💵 {currency}: {rate:.2f}\n"
@@ -49,7 +46,6 @@ def show_exchange_rates(update: Update, context: CallbackContext) -> None:
 # Bot asosiy funksiyasi
 def main():
     updater = Updater(BOT_TOKEN, use_context=True)
-
     dp = updater.dispatcher
 
     # Handlerlar
